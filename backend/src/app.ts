@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
+import errorMiddleware from "./middlewares/errorMiddleware";
+import router from "./routes";
 
 const app = express();
 
@@ -19,5 +21,9 @@ app.get("/", (_req, res) => {
     message: "API Running Successfully",
   });
 });
+
+app.use("/api", router);
+
+app.use(errorMiddleware);
 
 export default app;

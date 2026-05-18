@@ -1,0 +1,15 @@
+.env
+node_modules/
+dist/
+logs/
+*.log
+coverage/
+*.tsbuildinfo
+.DS_Store
+.idea/  
+.vscode/
+*.pem
+*.key
+*.crt
+*.pfx
+*.cer
