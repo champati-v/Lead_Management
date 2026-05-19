@@ -6,10 +6,14 @@ import { cn } from "@/lib/utils";
 export const Sheet = SheetPrimitive.Root;
 export const SheetTrigger = SheetPrimitive.Trigger;
 
-export function SheetContent({ className, children, ...props }: React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>) {
+type SheetContentProps = React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content> & {
+  overlayClassName?: string;
+};
+
+export function SheetContent({ className, children, overlayClassName, ...props }: SheetContentProps) {
   return (
     <SheetPrimitive.Portal>
-      <SheetPrimitive.Overlay className="fixed inset-0 z-40 bg-black/25" />
+      <SheetPrimitive.Overlay className={cn("fixed inset-0 z-40 bg-black/25", overlayClassName)} />
       <SheetPrimitive.Content className={cn("fixed right-0 top-0 z-50 h-full w-full max-w-md border-l bg-background p-5 shadow-lg", className)} {...props}>
         {children}
         <SheetPrimitive.Close className="absolute right-3 top-3 text-muted-foreground"><X className="h-4 w-4" /></SheetPrimitive.Close>

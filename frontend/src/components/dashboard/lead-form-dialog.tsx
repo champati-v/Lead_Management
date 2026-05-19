@@ -12,26 +12,26 @@ import type { Lead } from "@/types/leads";
 const schema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.email("Valid email is required"),
-  source: z.enum(["Website", "Instagram", "Referral"]),
+  source: z.enum(["website", "instagram", "referral"]),
   status: z.enum(["new", "contacted", "qualified", "lost"]),
 });
 
 export type LeadFormValues = z.infer<typeof schema>;
 
 export function LeadFormDialog({ open, onOpenChange, lead, loading, onSubmit }: { open: boolean; onOpenChange: (open: boolean) => void; lead: Lead | null; loading: boolean; onSubmit: (values: LeadFormValues) => void }) {
-  const form = useForm<LeadFormValues>({ resolver: zodResolver(schema), defaultValues: { name: "", email: "", source: "Website", status: "new" } });
+  const form = useForm<LeadFormValues>({ resolver: zodResolver(schema), defaultValues: { name: "", email: "", source: "website", status: "new" } });
 
   useEffect(() => {
     if (lead) {
-      form.reset({ name: lead.name, email: lead.email, source: (lead.source as LeadFormValues["source"]) ?? "Website", status: lead.status });
+      form.reset({ name: lead.name, email: lead.email, source: (lead.source as LeadFormValues["source"]) ?? "website", status: lead.status });
     } else {
-      form.reset({ name: "", email: "", source: "Website", status: "new" });
+      form.reset({ name: "", email: "", source: "website", status: "new" });
     }
   }, [lead, form, open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md p-5">
+      <DialogContent className="max-w-md p-5" overlayClassName="backdrop-blur-md">
         <DialogHeader><DialogTitle className="text-xl">{lead ? "Edit Lead" : "Create Lead"}</DialogTitle></DialogHeader>
         <form className="mt-3 space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
           <div className="space-y-1.5"><Label className="text-sm">Name</Label><Input className="h-9 text-sm" {...form.register("name")} /><p className="text-xs text-destructive">{form.formState.errors.name?.message}</p></div>
@@ -41,9 +41,9 @@ export function LeadFormDialog({ open, onOpenChange, lead, loading, onSubmit }: 
             <Select value={form.watch("source")} onValueChange={(value) => form.setValue("source", value as LeadFormValues["source"], { shouldValidate: true })}>
               <SelectTrigger><SelectValue placeholder="Select source" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="Website">Website</SelectItem>
-                <SelectItem value="Instagram">Instagram</SelectItem>
-                <SelectItem value="Referral">Referral</SelectItem>
+                <SelectItem value="website">Website</SelectItem>
+                <SelectItem value="instagram">Instagram</SelectItem>
+                <SelectItem value="referral">Referral</SelectItem>
               </SelectContent>
             </Select>
           </div>

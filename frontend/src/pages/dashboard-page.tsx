@@ -163,7 +163,7 @@ export function DashboardPage() {
       <LeadFormDialog open={formOpen} onOpenChange={setFormOpen} lead={editingLead} loading={saving} onSubmit={handleSaveLead} />
 
       <Dialog open={Boolean(deleteTarget)} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <DialogContent className="max-w-sm p-5">
+        <DialogContent className="max-w-sm p-5" overlayClassName="backdrop-blur-md">
           <DialogHeader><DialogTitle className="text-xl">Delete Lead</DialogTitle></DialogHeader>
           <p className="mt-2 text-sm text-slate-600">Are you sure you want to delete {deleteTarget?.name}? This action cannot be undone.</p>
           <div className="mt-4 flex justify-end gap-2">

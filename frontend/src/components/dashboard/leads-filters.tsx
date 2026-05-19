@@ -25,7 +25,7 @@ export function LeadsFilters({ query, setQuery, showExport, onExport }: LeadsFil
         <option value="">All Sources</option><option value="website">Website</option><option value="instagram">Instagram</option><option value="referral">Referral</option>
       </select>
       <Select value={query.sort} onValueChange={(value) => setQuery((q) => ({ ...q, page: 1, sort: value }))}>
-        <SelectTrigger className="w-[140px] dark:bg-slate-800 dark:text-slate-100"><SelectValue placeholder="Sort by" /></SelectTrigger>
+        <SelectTrigger className="w-35 dark:bg-slate-800 dark:text-slate-100"><SelectValue placeholder="Sort by" /></SelectTrigger>
         <SelectContent className="dark:border-slate-700 dark:bg-slate-900">
           <SelectItem value="latest">Latest</SelectItem>
           <SelectItem value="oldest">Oldest</SelectItem>

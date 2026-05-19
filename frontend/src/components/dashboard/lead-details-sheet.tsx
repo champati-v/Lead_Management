@@ -20,7 +20,7 @@ interface LeadDetailsSheetProps {
 export function LeadDetailsSheet({ lead, profile, mode, open, canDelete, onOpenChange, onEditLead, onDeleteLead, onLogout }: LeadDetailsSheetProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full max-w-md border-l border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900 sm:p-5">
+      <SheetContent className="w-full max-w-md border-l border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900 sm:p-5" overlayClassName="backdrop-blur-md">
         {mode === "lead" && lead ? (
           <div className="space-y-5">
             <div>
