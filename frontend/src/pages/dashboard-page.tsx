@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth-context";
 import { useDebounce } from "@/hooks/use-debounce";
-import { calcStats, createLead, deleteLead, exportLeadsCsv, getLeads, updateLead } from "@/services/leads-service";
-import type { Lead, LeadsQuery } from "@/types/leads";
+import { calcStats, createLead, deleteLead, exportLeadsCsv, getLeads, getSystemLeadStats, updateLead } from "@/services/leads-service";
+import type { Lead, LeadsQuery, LeadsStats } from "@/types/leads";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Topbar } from "@/components/dashboard/topbar";
 import { StatsCards } from "@/components/dashboard/stats-cards";
@@ -23,9 +23,10 @@ export function DashboardPage() {
   const [mobileSidebar, setMobileSidebar] = useState(false);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [totalPages, setTotalPages] = useState(1);
+  const [systemStats, setSystemStats] = useState<LeadsStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [query, setQuery] = useState<LeadsQuery>({ page: 1, search: "", status: "", source: "", sort: "-createdAt" });
+  const [query, setQuery] = useState<LeadsQuery>({ page: 1, search: "", status: "", source: "", sort: "latest" });
   const [sheetMode, setSheetMode] = useState<"lead" | "profile" | null>(null);
   const [detailsLead, setDetailsLead] = useState<Lead | null>(null);
   const [formOpen, setFormOpen] = useState(false);
@@ -33,6 +34,15 @@ export function DashboardPage() {
   const [deleteTarget, setDeleteTarget] = useState<Lead | null>(null);
 
   const debouncedSearch = useDebounce(query.search);
+
+  const fetchSystemStats = async () => {
+    try {
+      const stats = await getSystemLeadStats();
+      setSystemStats(stats);
+    } catch {
+      setSystemStats(null);
+    }
+  };
 
   const fetchLeads = async () => {
     setLoading(true);
@@ -48,10 +58,14 @@ export function DashboardPage() {
   };
 
   useEffect(() => {
+    fetchSystemStats();
+  }, []);
+
+  useEffect(() => {
     fetchLeads();
   }, [query.page, query.status, query.source, query.sort, debouncedSearch]);
 
-  const stats = calcStats(leads);
+  const stats = systemStats ?? calcStats(leads);
 
   const handleSaveLead = async (values: LeadFormValues) => {
     setSaving(true);
@@ -65,7 +79,7 @@ export function DashboardPage() {
       }
       setFormOpen(false);
       setEditingLead(null);
-      await fetchLeads();
+      await Promise.all([fetchLeads(), fetchSystemStats()]);
     } catch (error: any) {
       toast.error(error?.response?.data?.message ?? "Failed to save lead");
     } finally {
@@ -83,7 +97,7 @@ export function DashboardPage() {
         setSheetMode(null);
       }
       setDeleteTarget(null);
-      await fetchLeads();
+      await Promise.all([fetchLeads(), fetchSystemStats()]);
     } catch (error: any) {
       toast.error(error?.response?.data?.message ?? "Failed to delete lead");
     }
@@ -91,7 +105,7 @@ export function DashboardPage() {
 
   const handleExport = async () => {
     try {
-      const blob = await exportLeadsCsv();
+      const blob = await exportLeadsCsv({ page: query.page, search: query.search, status: query.status || "all", source: query.source || "all", sort: query.sort || "latest" });
       const href = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = href;
@@ -106,7 +120,7 @@ export function DashboardPage() {
   if (!user) return null;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50">
+    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
       <Sidebar
         user={user}
         open={mobileSidebar}
@@ -117,16 +131,16 @@ export function DashboardPage() {
       />
 
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <Topbar search={query.search} onSearch={(value) => setQuery((q) => ({ ...q, page: 1, search: value }))} onAddLead={() => { setEditingLead(null); setFormOpen(true); }} onMenu={() => setMobileSidebar(true)} />
+        <Topbar role={user.role} search={query.search} onSearch={(value) => setQuery((q) => ({ ...q, page: 1, search: value }))} onAddLead={() => { setEditingLead(null); setFormOpen(true); }} onMenu={() => setMobileSidebar(true)} />
 
         <main className="flex-1 space-y-4 overflow-hidden p-4 md:p-5">
           <StatsCards stats={stats} />
 
-          <section className="flex h-[calc(100%-7.5rem)] flex-col rounded-lg border border-slate-200 bg-white shadow-sm">
+          <section className="flex h-[calc(100%-7.5rem)] flex-col rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
             <div className="p-3"><LeadsFilters query={query} setQuery={setQuery} showExport={user.role === "admin"} onExport={handleExport} /></div>
 
             {loading
-              ? <div className="space-y-2 border-t border-slate-200 p-3"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>
+              ? <div className="space-y-2 border-t border-slate-200 p-3 dark:border-slate-700"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /></div>
               : <LeadsTable leads={leads} canDelete={user.role === "admin"} onRowClick={(lead) => { setDetailsLead(lead); setSheetMode("lead"); }} onEdit={(lead) => { setEditingLead(lead); setFormOpen(true); }} onDelete={(lead) => setDeleteTarget(lead)} />}
 
             <Pagination page={query.page} totalPages={totalPages} onPageChange={(page) => setQuery((q) => ({ ...q, page }))} />
@@ -161,3 +175,7 @@ export function DashboardPage() {
     </div>
   );
 }
+
+
+
+

@@ -26,17 +26,18 @@ export interface LeadsMeta {
   limit: number;
 }
 
-export interface LeadsListResponse {
-  data: Lead[];
-  meta: LeadsMeta;
-}
-
 export interface LeadsStats {
   total: number;
   qualified: number;
   new: number;
   contacted: number;
   lost: number;
+}
+
+export interface LeadsListResponse {
+  data: Lead[];
+  meta: LeadsMeta;
+  stats?: LeadsStats;
 }
 
 export interface LeadsQuery {
@@ -53,4 +54,3 @@ export interface LeadPayload {
   status: LeadStatus;
   source: string;
 }
-

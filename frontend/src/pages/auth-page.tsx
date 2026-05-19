@@ -96,7 +96,7 @@ export function AuthPage() {
                 <p className="mt-1 text-xs text-destructive">{form.formState.errors.email?.message}</p>
               </div>
               <div>
-                <div className="flex items-center justify-between"><Label className="text-sm">Password</Label><button type="button" className="text-xs font-medium text-blue-600">Forgot?</button></div>
+                <div className="flex items-center justify-between"><Label className="text-sm">Password</Label></div>
                 <div className="relative mt-1.5"><Input className="h-9 pr-10 text-sm" type={showPassword ? "text" : "password"} {...form.register("password")} /><button className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500" type="button" onClick={() => setShowPassword((v) => !v)}>{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button></div>
                 <p className="mt-1 text-xs text-destructive">{form.formState.errors.password?.message}</p>
               </div>
@@ -108,3 +108,4 @@ export function AuthPage() {
     </main>
   );
 }
+

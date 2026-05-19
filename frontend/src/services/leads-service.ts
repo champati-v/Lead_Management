@@ -29,6 +29,30 @@ function toMeta(payload: any, count: number) {
   };
 }
 
+function toStats(payload: any): LeadsStats | undefined {
+  const stats = payload?.stats ?? payload?.summary ?? payload?.counts;
+  if (!stats) return undefined;
+  const total = Number(stats.total ?? stats.all ?? 0);
+  const qualified = Number(stats.qualified ?? 0);
+  const newCount = Number(stats.new ?? 0);
+  const contacted = Number(stats.contacted ?? 0);
+  const lost = Number(stats.lost ?? 0);
+  if ([total, qualified, newCount, contacted, lost].every((v) => Number.isFinite(v))) {
+    return { total, qualified, new: newCount, contacted, lost };
+  }
+  return undefined;
+}
+
+function aggregateStats(leads: Lead[], total?: number): LeadsStats {
+  return {
+    total: total ?? leads.length,
+    qualified: leads.filter((lead) => lead.status === "qualified").length,
+    new: leads.filter((lead) => lead.status === "new").length,
+    contacted: leads.filter((lead) => lead.status === "contacted").length,
+    lost: leads.filter((lead) => lead.status === "lost").length,
+  };
+}
+
 export async function getLeads(query: LeadsQuery): Promise<LeadsListResponse> {
   const { data } = await api.get("/api/leads", { params: toParams(query) });
   const body = data?.data ?? data;
@@ -36,7 +60,38 @@ export async function getLeads(query: LeadsQuery): Promise<LeadsListResponse> {
   return {
     data: leads,
     meta: toMeta(body, leads.length),
+    stats: toStats(body),
   };
+}
+
+export async function getSystemLeadStats(): Promise<LeadsStats> {
+  const firstPage = await getLeads({
+    page: 1,
+    search: "",
+    status: "",
+    source: "",
+    sort: "latest",
+  });
+
+  if (firstPage.stats) {
+    return firstPage.stats;
+  }
+
+  const allLeads: Lead[] = [...firstPage.data];
+  const { totalPages, total } = firstPage.meta;
+
+  for (let page = 2; page <= totalPages; page += 1) {
+    const pageData = await getLeads({
+      page,
+      search: "",
+      status: "",
+      source: "",
+      sort: "latest",
+    });
+    allLeads.push(...pageData.data);
+  }
+
+  return aggregateStats(allLeads, total);
 }
 
 export async function createLead(payload: LeadPayload) {
@@ -53,18 +108,21 @@ export async function deleteLead(id: string) {
   await api.delete(`/api/leads/${id}`);
 }
 
-export async function exportLeadsCsv() {
-  const { data } = await api.get<Blob>("/api/leads/export/csv", { responseType: "blob" });
+export async function exportLeadsCsv(filters?: Partial<Pick<LeadsQuery, "page" | "search" | "status" | "source" | "sort">>) {
+  const params = new URLSearchParams();
+  params.set("page", String(filters?.page ?? 1));
+  params.set("search", (filters?.search ?? "").toString());
+  params.set("status", (filters?.status ?? "all").toString());
+  params.set("source", (filters?.source ?? "all").toString());
+  params.set("sort", (filters?.sort ?? "latest").toString());
+
+  const { data } = await api.get<Blob>(`/api/leads/export/csv?${params.toString()}`, {
+    responseType: "blob",
+  });
   return data;
 }
 
 export function calcStats(leads: Lead[]): LeadsStats {
   const safeLeads = Array.isArray(leads) ? leads : [];
-  return {
-    total: safeLeads.length,
-    qualified: safeLeads.filter((lead) => lead.status === "qualified").length,
-    new: safeLeads.filter((lead) => lead.status === "new").length,
-    contacted: safeLeads.filter((lead) => lead.status === "contacted").length,
-    lost: safeLeads.filter((lead) => lead.status === "lost").length,
-  };
+  return aggregateStats(safeLeads);
 }

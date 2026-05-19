@@ -197,15 +197,31 @@ export const exportLeadsCSV = async (params: LeadQueryParams): Promise<string> =
 
   const leads = await Lead.find(query).sort(sortQuery);
 
+  const toSafeString = (value: unknown): string => {
+    if (value === null || value === undefined) {
+      return "";
+    }
+    if (typeof value === "string") {
+      return value;
+    }
+    if (value instanceof Date) {
+      return value.toISOString();
+    }
+    if (typeof value === "object" && "toString" in value && typeof value.toString === "function") {
+      return value.toString();
+    }
+    return String(value);
+  };
+
   const rows = leads.map((lead) => ({
-    id: lead._id.toString(),
+    id: toSafeString(lead._id),
     name: lead.name,
     email: lead.email,
     status: lead.status,
     source: lead.source,
-    createdBy: lead.createdBy.toString(),
-    createdAt: lead.createdAt.toISOString(),
-    updatedAt: lead.updatedAt.toISOString(),
+    createdBy: toSafeString(lead.createdBy),
+    createdAt: toSafeString(lead.createdAt),
+    updatedAt: toSafeString(lead.updatedAt),
   }));
 
   const parser = new Parser({
