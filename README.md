@@ -237,4 +237,4 @@ The application is fully responsive across:
 # 👨‍💻 Author
 
 Vibekananda Champati
-MERN Stack Assignment for Service Hive.
+MERN Stack Intern Assignment for Service Hive.
