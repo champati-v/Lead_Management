@@ -3,7 +3,7 @@ import axios from "axios";
 export const TOKEN_KEY = "sl_token";
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:5000",
+  baseURL: import.meta.env.VITE_API_URL ?? "https://lead-management-o71u.onrender.com",
 });
 
 api.interceptors.request.use((config) => {
