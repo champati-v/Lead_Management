@@ -136,7 +136,7 @@ export function DashboardPage() {
         <main className="flex-1 space-y-4 overflow-hidden p-4 md:p-5">
           <StatsCards stats={stats} />
 
-          <section className="flex h-[calc(100%-7.5rem)] flex-col rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+          <section className="flex h-[calc(100%-7.5rem)] flex-col rounded-lg border border-slate-200 bg-background shadow-sm dark:border-slate-700 dark:bg-slate-900">
             <div className="p-3"><LeadsFilters query={query} setQuery={setQuery} showExport={user.role === "admin"} onExport={handleExport} /></div>
 
             {loading

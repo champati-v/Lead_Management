@@ -17,7 +17,7 @@ export function Topbar({ search, onSearch, onAddLead, onMenu, role }: TopbarProp
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="flex h-14 items-center gap-3 border-b border-slate-200 bg-white px-4 dark:border-slate-700 dark:bg-slate-900 md:px-6">
+    <header className="flex h-14 items-center gap-3 border-b border-slate-200 bg-background px-4 dark:border-slate-700 dark:bg-slate-900 md:px-6">
       <Button className="md:hidden" size="icon" variant="ghost" onClick={onMenu}><Menu className="h-4 w-4" /></Button>
       <h1 className="text-3xl font-semibold text-slate-900 dark:text-slate-100">Leads Overview</h1>
       <div className="ml-auto flex items-center gap-2">

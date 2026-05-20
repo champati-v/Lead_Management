@@ -69,8 +69,8 @@ export function AuthPage() {
 
             <div className="mt-6 rounded-lg bg-slate-200 p-1">
               <div className="grid grid-cols-2 gap-1">
-                <button type="button" className={`h-9 rounded-md text-sm font-medium ${mode === "login" ? "bg-white text-blue-600" : "text-slate-600"}`} onClick={() => setMode("login")}>Login</button>
-                <button type="button" className={`h-9 rounded-md text-sm font-medium ${mode === "register" ? "bg-white text-blue-600" : "text-slate-600"}`} onClick={() => setMode("register")}>Register</button>
+                <button type="button" className={`h-9 rounded-md text-sm font-medium ${mode === "login" ? "bg-background text-blue-600" : "text-slate-600"}`} onClick={() => setMode("login")}>Login</button>
+                <button type="button" className={`h-9 rounded-md text-sm font-medium ${mode === "register" ? "bg-background text-blue-600" : "text-slate-600"}`} onClick={() => setMode("register")}>Register</button>
               </div>
             </div>
 

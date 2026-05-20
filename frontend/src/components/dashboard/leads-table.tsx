@@ -31,7 +31,7 @@ export function LeadsTable({ leads, canDelete, onRowClick, onEdit, onDelete }: L
   return (
     <div className="max-h-[420px] overflow-auto border-t border-slate-200 dark:border-slate-700">
       <Table>
-        <TableHeader className="sticky top-0 z-10 bg-white dark:bg-slate-900">
+        <TableHeader className="sticky top-0 z-10 bg-background dark:bg-slate-900">
           <TableRow className="h-10">
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>

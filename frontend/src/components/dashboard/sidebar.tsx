@@ -18,7 +18,7 @@ export function Sidebar({ user, open, onClose, onCreateLead, onLogout, onViewPro
   const avatarInitial = profileText[0]?.toUpperCase() ?? "U";
 
   return (
-    <aside className={`fixed inset-y-0 left-0 z-40 flex w-60 flex-col border-r border-slate-200 bg-white px-4 py-4 transition-transform dark:border-slate-700 dark:bg-slate-900 md:static md:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
+    <aside className={`fixed inset-y-0 left-0 z-40 flex w-60 flex-col border-r border-slate-200 bg-background px-4 py-4 transition-transform dark:border-slate-700 dark:bg-slate-900 md:static md:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
       <div className="mb-6 flex items-center gap-2.5">
         <div className="grid h-8 w-8 place-items-center rounded-md bg-[#0d57d5] text-white"><LayoutList className="h-4 w-4" /></div>
         <div>
